@@ -1,0 +1,28 @@
+\chapter{Sense Function}
+\label{appendix:sense}
+
+\begin{figure}
+  \begin{nesc}
+module LightSensorP {
+  provides interface LightSensor;
+  uses interface Read<uint16_t> as Read;
+}
+implementation
+{
+  command void LightSensor.sense() {
+    call Read.read();
+  }
+  event void Read.readDone(error_t err,
+   uint16_t val) {
+    if(err == SUCCESS) {
+      #CALLBACK(val);
+    }
+  }
+}
+  \end{nesc}
+  \caption[A split-phase hardware driver for reading from the light sensor]{The
+  {\tt LightSensor.sense} function is called by the microcode through the RTS.
+  The decomposer must automatically replace {\tt\#CALLBACK} with an appropriate
+  function to continue microprogram execution.}
+  \label{code:hardwareDriver}
+\end{figure}

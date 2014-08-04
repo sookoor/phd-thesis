@@ -1,0 +1,320 @@
+\chapter{Room-Level Zoning}
+\label{appendix:roomLevelZoningAlgs}
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{False Positive Minimization}          % give the algorithm a caption
+\label{alg:fpFiltering}                           % and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\STATE $aggregateData = []$
+\STATE $windowStartIndex = 1$
+\WHILE{$windowStartIndex < length(sensorFirings)$}
+\STATE $windowEndTime = sensorFirings(windowStartIndex) + oneMin$
+\STATE $firingsBeforeEnd = sensorFirings < windowEndTime$
+\STATE $firingsInWindow = firingsBeforeEnd(windowStartindex:end)$
+\IF{$length(firingsInWindow) \geq numSensors / 2$}
+\STATE $aggregateData.append(firingsInWindow(end))$
+\STATE $windowStartInterval = windowEndInterval + 1$
+\ELSE
+\STATE $windowStartInterval = windowStartInterval + 1$
+\ENDIF
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{Search Space Generation}          % give the algorithm a caption
+\label{alg:paramGen}                           % and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\FOR{$occStartCnt = occStartCntRange$}
+\FOR{$occStartTO = occStartTORange$}
+\FOR{$occEndCnt = occEndCntRange$}
+\FOR{$occEndTO = occEndTORange$}
+\STATE $occupancyTS = []$
+\FOR{$i = 1:length(aggregateData)$}
+\IF{$aggregateData(i + occStartCnt) - aggregateData(i) \leq occStartTO$}
+\STATE $occupancyTS.append([aggregateData(i+occStartCnt-1), 1])$
+\ELSIF{$aggregateData(i + occEndCnt) - aggregateData(i) > occEndTO$}
+\STATE $occupancyTS.append([aggregateData(i) +
+  occEndTO, 0])$
+\ENDIF
+\ENDFOR
+\STATE $transCnt = 0$
+\STATE $occDuration = 0$
+\STATE $coveredFirings = []$
+\STATE $iData = 1$
+\STATE $vacancyStartTime = NaN$
+\STATE $offIntervals = []$
+\IF{$occupancyTS(1, 2) == 1$}
+\STATE $occupancyStartTime = occupancyTS(1, 1)$
+\ELSE
+\STATE $occupancyStartTime = 0$
+\ENDIF
+\FOR{$j = 2:length(occupancyTS)$}
+\IF{$occupancyTS(j - 1, 2) == 0 \: \AND \: occupancyTS(j, 2) == 1$}
+\STATE $occupancyStartTime = occupancyTS(j, 1)$
+\STATE $transCnt += 1$
+\IF{$vacancyStartTime \neq NaN$}
+\STATE $offIntervals.append(occupancyStartTime - vacancyStartTime)$
+\ENDIF
+\ELSIF {$occupancyTS(j - 1, 2) == 1 \: \AND \: occupancyTS(j, 2) == 0$}
+\STATE $transCnt += 1$
+\STATE $occDuration = occDuration +
+occupancyTS(j, 1) - occupancyStartTime$
+\WHILE{$aggregateData(iData) \leq occupancyTS(j,
+  1)$}
+\IF{$aggregateData(iData) \geq occupancyStartTime \: \AND \: aggregateData(iData) < occupancyTS(j, 1)$}
+\STATE
+$coveredFirings.append(aggregateData(iData))$
+\ENDIF
+\ENDWHILE
+\ENDIF
+\STATE $FNCnt = length(aggregateData) - length(coveredFirings)$
+\STATE $offInt25 = prctile(offIntervals, 25)$
+\STATE $params.append([FNCnt, transCnt, offInt25, occDuration, ...$
+\STATE $occStartCnt, occStartTO, occEndCnt, occEndTO])$
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{Parameter Selection}          % give the algorithm a caption
+\label{alg:paramSelection}                           % and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\FOR{$i = 1:length(params)$}
+\IF{$params(i, 1) / numDays < FN \: \AND \: params(i, 2) / numDays < K
+  \: \AND \: params(i, 3) \geq T_{25}$}
+\STATE $candidateParameters.append(params(i, :))$
+\ENDIF 
+\ENDFOR
+\STATE $minOccupiedDurationIndex = find(min(candidateParameters(:, 4)))$
+\STATE $selectedParameters.append(candidateParameters(minOccupiedDurationIndex, 5:end))$
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{Temperature Estimation}          % give the algorithm a caption
+\label{alg:temperatureEstimation}% and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\STATE $wholeHouseTempSum = 0$
+\STATE $numRooms = 0$
+\FOR{$room in rooms$}
+\STATE $wholeHouseTempSum += room.temperature$
+\STATE $numRooms += 1$
+\ENDFOR
+\STATE $wholeHouseAvg = wholeHouseTempSum / numRooms$
+
+\STATE $conditionedRoomsTempSum = 0$
+\STATE $numConditionedRooms = 0$
+\FOR{$room in rooms$}
+\IF{$room.damperClosed == False \: \AND \: room.transitionallyOccupied ==
+  False$}
+\STATE $conditionedRoomsTempSum += room.temperature$
+\STATE $numConditionedRooms += 1$
+\ENDIF
+\ENDFOR
+\STATE $conditionedRoomsAvg = conditionedRoomsTempSum / numConditionedRooms$
+
+\STATE $occupiedRoomsTempSum = 0$
+\STATE $numOccupiedRooms = 0$
+\FOR{$room in rooms$}
+\IF{$room.stablyOccupied$}
+\STATE $occupiedRoomsTempSum += room.temperature$
+\STATE $numOccupiedRooms += 1$
+\ENDIF
+\ENDFOR
+\STATE $occupiedRoomsAvg = occupiedRoomsTempSum / numOccupiedRooms$
+\IF{$mode == 'cool'$}
+\STATE $averageTemp = min(wholeHouseAvg, conditionedRoomsAvg,
+occupiedRoomsAvg)$
+\ELSE
+\STATE $averageTemp = max(wholeHouseAvg, conditionedRoomsAvg,
+occupiedRoomsAvg)$
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{HVAC Stage Selection}          % give the algorithm a caption
+\label{alg:hvacStageSelection}% and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\IF{$numOccupiedRooms > 0$}
+\STATE $tempDiff = averageTemp - setpoint$
+\ELSE
+\STATE $tempDiff = averageTemp - setback$
+\ENDIF
+
+\IF{$mode == 'heat'$}
+\STATE $tempDiff = -tempDiff$
+\ENDIF
+
+\IF{$hvacStage == -1$}
+\IF{$tempDiff > 1.5$}
+\STATE $hvacStage = 2$
+\ELSIF{$tempDiff > 0.5$}
+\STATE $hvacStage = 1$
+\ELSE
+\STATE $hvacStage = 0$
+\ENDIF
+\ELSIF{$hvacStage == 0$}
+\IF{$tempDiff > 1.7$}
+\STATE $hvacStage = 2$
+\ELSIF{$tempDiff > 0.7$}
+\STATE $hvacStage = 1$
+\ENDIF
+\ELSIF{$hvacStage == 1$}
+\IF{$tempDiff > 1.7$}
+\STATE $hvacStage = 2$
+\ELSIF{$tempDiff < -0.5$}
+\STATE $hvacStage = 0$
+\ENDIF
+\ELSE
+\IF{$tempDiff < -0.5$}
+\STATE $hvacStage = 0$
+\ELSIF{$tempDiff < 0.3$}
+\STATE $hvacStage = 1$
+\ENDIF
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{Dump Zone Selection}          % give the algorithm a caption
+\label{alg:dumpZoneSelection}% and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\FOR{$room in rooms$}
+\STATE $activeRooms = []$
+\STATE $dumpCandidate = []$
+\IF{$room.stageRequest > 0 \: or \: room.transitionallyOccupied$}
+\STATE $activeRooms.append(room)$
+\ELSE
+\STATE $dumpCandidates.append(room)$
+\ENDIF
+\ENDFOR
+
+\STATE $dumpSets = []$
+
+\FOR{$dumpSet in combinations(dumpCandidates)$}
+
+\STATE $airflow = calculateAirflow(activeRooms, dumpSet)$
+
+\STATE $minFlowChange = INF$
+\FOR{$room in dumpSet$}
+\IF{$room.openAirflow < minflow$}
+\STATE $minFlowChange = room.openAirflow - room.closedAirflow$
+\ENDIF
+\ENDFOR
+
+\IF{$airflow > safeAirflow \: \AND \: minFlowChange > airflow - safeAirflow$}
+\STATE $dumpSets.append(dumpSet)$
+\ENDIF
+
+\ENDFOR
+
+\STATE $bestEnergy = -INF$; $bestChanges = 0$; $bestDumpZone = []$
+\FOR{$dumpSet in dumpSets$}
+
+\STATE $inactiveRooms = rooms$
+\FOR{$room in activeRooms$}
+\STATE $inactiveRooms.remove(room)$
+\STATE $activeZoneEnergy += voltages(hvacStage, dumpSet, room)$
+\ENDFOR
+
+\STATE $damperChanges = 0$
+\FOR{$room in dumpSet$}
+\STATE $inactiveRooms.remove(room)$
+\IF{$room.damperClosed$}
+\STATE $damperChanges += 1$
+\ENDIF
+\ENDFOR
+
+\FOR{$room in inactiveRooms$}
+\IF{$room.damperClosed == False$}
+\STATE $damperChanges += 1$
+\ENDIF
+\ENDFOR
+
+\IF{$activeZoneEnergy - damperCost * damperChanges > bestEnergy -
+  damperCost * bestChanges$}
+\STATE $bestDumpZone = dumpSet$
+\STATE $bestEnergy = activeZoneEnergy$
+\STATE $bestDamperChanges = damperChanges$
+\ENDIF
+
+\ENDFOR
+
+\STATE $dumpZone = []$
+\FOR{$room in bestDumpZone$}
+\STATE $dumpZone.append(room)$
+\STATE $estimatedAirflow = calculateAirflow(activeRooms, dumpZone)$
+\IF{$estimatedAirflow > safeAirflow$}
+\STATE $return dumpZone$
+\ENDIF
+\ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}                      % enter the algorithm environment
+\caption{Airflow Calculation}          % give the algorithm a caption
+\label{alg:calculateAirflow}% and a label for \ref{} commands later in the document
+\begin{algorithmic}                    % enter the algorithmic environment
+\STATE $airflow = 0$
+\FOR{$room in rooms$}
+\IF{$room in activeRooms \: \OR \: dumpSet$}
+\STATE $airflow += room.openAirflow$
+\ELSE
+\STATE $airflow += room.closedAirflow$
+\ENDIF
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}
+  \begin{macrolab}
+RTS = RunTimeSystem();
+weatherdirect = RTS.getMotes('type', 'weatherdirect');
+tempSensors = SensorVector(weatherdirect, 'temperature');
+x10 = RTS.getMotes('type', 'X10');
+motionSensors = SensorVector(x10, 'motion');
+motionSensorIDs = uint8({[8 1 9], [2 6], [10 5], [4], [7 11], [12 14], [3 15]});
+tempSensorIDs = uint8({[1 3], [2], [6 7], [4 9 11], [12 13], [5 14], [8 10]}); 
+damperIDs = uint8({[3 5], [1 2], [8 4], [10], [11 15], [12 14], [5 7]});
+nightStart = [0 0 0 2 0 0];
+nightEnd = [0 0 0 7 0 0];
+curState = 'On'
+every(60000)
+  mode = dbRead('zoning', 'mode', 'latest')
+  damperState = dbRead('zoning', 'damper', damperIDs) 
+  motionVals = motionSensors.sense();
+  tempVals =  tempSensors.sense();
+  [stablyOccupied, transitionallyOccupied] = assessOccupancy(motionVals, motionSensorIDs);
+  aTemp = calculateAverageTemperature(tempVals, stablyOccupied, transitionallyOccupied, damperState)
+  if length(stablyOccupied) > 0 || length(transitionallyOccupied) > 0
+    SP = dbRead('zoning', 'setpoint', 'latest');
+  else
+    SP = dbRead('zoning', 'setback', 'latest');
+  if mode == 'heat'
+    deltaTemp = SP - aTemp;
+  else
+    deltaTemp = aTemp - SP;
+  curState = getNextState(curState, deltaTemp);
+  if curState > 0:
+    dumpRooms = selectDumpZone(curState, stablyOccupied, transitionallyOccupied);
+    hvacActuate(mode, curState, [stablyOccupied dumpRooms]);
+  else
+    hvacActuate(mode, curState, stablyOccupied);
+  end
+end
+  \end{macrolab}
+  \smallskip
+  \hrule width 1\columnwidth
+  \caption{MacroLab implementation of room-level zoning.}
+  \label{code:cs2}
+\end{figure}

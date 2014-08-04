@@ -1,0 +1,61 @@
+\begin{abstract}
+  Cyber-Physical Systems (CPSs) combine low-power radios with tiny embedded
+  processors in order to simultaneously cover large geographic areas {\em and}
+  provide high-resolution sensing/actuation. However, CPSs are extremely
+  difficult to program. This issue is addressed by presenting a macroprogramming
+  framework called {\em MacroLab} that offers a vector programming abstraction
+  similar to Matlab for Cyber-Physical Systems.  The user writes a single
+  program for the entire network using Matlab-like operations such as {\tt
+  addition}, {\tt find}, and {\tt max}. The framework executes these operations
+  across the network in a distributed fashion, a centralized fashion, or
+  something between the two -- whichever is most efficient for the target
+  deployment. This approach is called {\em deployment-specific code
+  decomposition} (DSCD).  MacroLab programs can be executed on mote-class
+  hardware such as the Telos motes. The results indicate that MacroLab
+  introduces almost no additional overhead in terms of message cost, power
+  consumption, memory footprint, or CPU cycles over TinyOS programs.
+
+  As a crucial component of the application development cycle, debugging CPSs is
+  addressed by {\em MDB}, the first system to support the debugging of
+  macroprograms.  MDB allows the user to set breakpoints and step through a
+  macroprogram using a source-level debugging interface similar to GDB, a
+  process called {\em macrodebugging}.  A key challenge of MDB is to step
+  through a macroprogram in sequential order even though it executes on the
+  network in a distributed, asynchronous manner.  Besides allowing the user to
+  view distributed state, MDB also provides the ability to search for bugs over
+  the entire history of distributed states.  Finally, MDB allows the user to
+  make hypothetical changes to a macroprogram and to see the effect on
+  distributed state without the need to redeploy, execute, and test the new
+  code. Macrodebugging is both easy and efficient: MDB consumes few system
+  resources and requires few user commands to find the cause of bugs. A
+  lightweight version of MDB, called {\em MDB Lite}, is also provided. It can be
+  used during the deployment phase to reduce resource consumption while still
+  eliminating the possibility of heisenbugs: changes in the manifestation of
+  bugs caused by enabling or disabling the debugger.
+
+  While a large number of CPS applications have been developed over the last few
+  years, very few, if any, have been developed using a macroprogramming
+  language. This is in spite of the vast array of macroprogramming languages,
+  and abstractions, that are available. In an attempt to understand why
+  macroprogramming languages are not being used for CPS application development
+  and in order to evaluate the effectiveness of MacroLab in implementing a
+  real-world CPS, a series of case studies involving the occupancy-based control
+  of a Heating, Ventilation, and Air Conditioning (HVAC) system is
+  implemented. Occupant-oriented HVAC control was selected due to it being a
+  complete cyber-physical system involving the interaction between the real
+  world and computation. Unlike many sensor network applications that involve
+  primarily data collection, occupant-oriented HVAC control requires all three
+  constituents of a complete CPS: sensing, computation, and actuation. The
+  computation involved in these case studies range from making control decisions
+  to predictions. 
+
+  The case studies can be written in MacroLab in fewer lines of code than their
+  implementations in Python and MacroLab can optimize their implementations
+  depending on the topology of the network and capabilities of the sensors. Yet,
+  the freedom for optimization decreases as the complexity of computation
+  increases, or the size of the network decreases. Thus, for future
+  cyber-physical systems the abstractions provided by macroprogramming systems,
+  such as MacroLab presenting all sensor values as vectors and actuations as
+  function calls, would be more beneficial than any implementation optimizations
+  they may afford. 
+\end{abstract}

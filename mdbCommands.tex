@@ -1,0 +1,24 @@
+\chapter{MDB Commands}
+\label{appendix:mdbCommands}
+
+\begin{table}
+  {
+  \begin{tabular}{|l|l|} \hline
+    Command & Description\\ \hline\hline
+    tjump (\emph{t}) & change the state of the system to time \emph{t} \us \\
+    tstep [(\emph{t})] & change the state of the system to next logged time [or current time + \emph{t}] \\ \hline
+    lbreak (\emph{l}) & place a breakpoint at line \emph{l} \\
+    lstep [(\emph{l})] & increment to the next line [or step \emph{l} lines] \\ 
+    lcont & move forward to the next breakpoint \\ 
+    lstatus & list all breakpoints \\
+    lclear [(\emph{l})] & remove breakpoint [at line \emph{l}] \\ \hline
+    isCoherent (\emph{x}, \emph{y}) & check if \emph{x} is coherent with \emph{y} \\
+    diff (\emph{x}, \emph{y}) & compare views \emph{x} and \emph{y} of a vector
+    \\ \hline
+    alt (\emph{hc}, \emph{tl}) & produce a timeline by altering \emph{tl} using hypothetical change \emph{hc}\\
+    getTime & get current debugger time \\ \hline
+  \end{tabular}}
+  \caption[Basic commands provided by MDB]{Basic commands provided by MDB. These commands allow the user to (1) navigate the trace temporally, (2) navigate the trace logically, (3) compare macrovectors, and (4) make hypothetical changes to the code.  
+  }
+  \label{table:commands}
+\end{table}

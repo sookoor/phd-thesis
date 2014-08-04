@@ -1,0 +1,131 @@
+\chapter{Conclusion}
+\label{sect:conclusion}
+
+In this dissertation, we present an implementation of a macroprogramming and
+macrodebugging framework for Cyber-Physical Systems and discuss an application
+of CPSs in the form of a room-level zoning system to
+minimize the energy consumed for heating homes by conditioning only occupied
+spaces. Macroprogramming systems make programming CPSs easier by providing high-level
+distributed abstractions such as database tables, logical facts, or data streams
+so that users do not need to build mental models of the individual nodes
+and their interactions. With MacroLab we approached the issue of software design
+for CPSs by attempting to address the central question of whether programs
+should be implemented in a centralized or distributed fashion. Most early sensor
+network research focused on ``{\em localized} algorithms -- where sensors only
+interact with other sensors in a restricted vicinity, but nevertheless
+collectively achieve a desired global objective''~\cite{Estrin}.  For
+example, early object tracking applications argue that neighborhood
+communication and local processing are necessary to efficiently filter false
+positives~\cite{Whitehousea} and services like TAG use {\em
+in-network aggregation} to calculate network statistics {\em en route} to
+decrease message passing~\cite{Madden}.  More recently, several
+architectures have proposed the use of centralized algorithms to control
+distributed systems. {\em Marionette} allows the user to write a
+centralized Python script to control all nodes in a
+network~\cite{Whitehouseb}.  It argues that centralized algorithms are
+easier to write and debug and that, once debugged, functionality can be {\em
+migrated} to the sensor nodes for efficiency reasons if
+necessary~\cite{Whitehouse}. The {\em Tenet}~\cite{Gnawali} architecture
+takes a stronger stance by arguing that all application-specific code should
+{\em always} execute on master devices while sensor nodes should be restricted
+to a small set of predefined operations on locally-generated data. The rationale
+here is to separate the application code from the networking code so that
+changes in the application do not cause cascading changes to the networking
+middleware.
+
+With the {\em deployment-specific code decomposition} approach taken by
+MacroLab, we argue that programs can actually be implemented in both a
+centralized {\em and} a distributed fashion.  We re-frame the architectural
+question from {\em where code should execute} to {\em how code should be
+  written}.  The central tenet of our architecture is that all
+application-specific logic should be contained in a macroprogram and all
+distributed operations must be contained as libraries in the run-time system.
+When code is written in this way, we get the best of both worlds: (1) the
+decomposer and the run-time system can choose the manner of implementation that
+provides the best performance in terms of cost metrics like bandwidth, power,
+and latency, and (2) the user is free to write {\em deployment-independent}
+programs that are simple, robust, and easy to understand.
+
+While there has been considerable research in the area of macroprogramming
+abstractions for CPSs, to the best of our knowledge, no macroprogramming systems
+have debugging support, which is a crucial link in the development chain as a
+macroprogram progresses from the drawing board to real deployment. We present
+MDB, the first system that allows the user to inspect and analyze the execution
+of a WEN using the high-level abstractions provided by a macroprogramming
+system.  This process that we call \emph{macrodebugging} simplifies the
+debugging process and eliminates the need to analyze traces of low-level events
+and message passing algorithms.  We show that macrodebugging is not only easier,
+but also more efficient than the debugging of node-level programs.
+
+While the MDB macrodebugger is built for the MacroLab macroprogramming
+abstraction, the underlying principles can be applied to other
+macroprogramming systems.  The collection of data traces can be applied to any
+system that has a high-level abstraction for which the overhead of logging a
+single high-level operation is small compared to the number of low-level
+instructions required to execute that operation.  This property holds for most
+macroprogramming systems.  The source-level debugging interface can be applied
+to any system that uses a sequential imperative language and has a clear mapping
+between macrocode and microcode, such as Kairos~\cite{Gummadi},
+Plaeiades~\cite{Kothari}, and Marionette~\cite{Whitehouseb}.  Other systems that
+use functional~\cite{Newton} or declarative abstractions~\cite{Madden} must
+present information from data traces using a different interface.  The four
+hypothetical changes presented illustrate the affects of adding data
+synchronization to a macroprogram, and are only useful to systems like MacroLab
+and Hood~\cite{Whitehousea} that make heavy use of data caching.  However, the
+general concept of creating hypothetical changes to illustrate how theoretical
+changes to a program or execution state \emph{would} affect global state could
+be applied to aspects of other systems besides data synchronization.
+
+The current implementation of MDB provides \emph{post-mortem} debugging, which
+means that it collects data about the system at run time and allows the user to
+inspect program execution after the logs are retrieved.  At least some of the
+underlying concepts, however, could be applied to on-line debugging.  For
+example, the process of logging data instead of events to recreate system state
+would reduce the amount of data that needs to be collected during on-line
+debugging, in the same way that it reduces data collection requirements for
+off-line debugging.  Similarly, the logically-synchronous and
+temporally-synchronous source-level debugging interface could also be used for
+on-line debugging, and could even be combined with off-line data trace analysis to
+provide both forward and backward stepping. Hypothetical changes would not be as
+useful for on-line debugging as they are for off-line debugging, because the
+user could test changes to the system by simply changing the current state of
+the system before allowing execution to proceed.
+
+Finally, we analyze the effectiveness of MacroLab as a CPS programming
+abstraction using a series of case studies based on zoning a centralized HVAC
+system in response to occupancy. As the case-studies demonstrate, as
+applications get more complex the amount of in-network and node-level data
+processing and code optimization decreases. In such a scenario, providing a
+clean simple abstraction which allows a programmer to write the program logic
+without worrying about where the data resides and how the data would be
+collected would greatly reduce the burden of CPS application development. The
+automatic optimization of applications based on topology and available hardware
+allows a programmer to be confident that a program written in a macroprogramming
+language such as MacroLab will execute as efficiently as one hand-tuned with
+node-level code. 
+
+As the current state-of-the-art and this dissertation demonstrates a large
+amount of work is necessary in order to make the available macroprogramming
+languages usable for a wide variety of applications. Programmers instinctively
+resort to the decade-old TinyOS progamming environment simply due to the fact
+that it has the most complete set of libraries and tool-chain. The benefit of not
+having to implement any drivers of library functions in TinyOS outweighs the
+burden of programming at the node-level. The main reason for TinyOS being such a
+complete programming framework is it being the first widely adopted programming
+environment for wireless sensor networks, the precursor to CPSs. Due to not
+having any alternatives, pioneering application developers wrote the functions
+and tools they required for their applications and added it to the open-source
+TinyOS libraries. Over time sufficient functions and tools were added for later
+application developers to be able to use them without having to write them from
+scratch. 
+
+A similar effort has to happen in the macroprogramming arena. Macroprogramming
+languages should be open sourced and made easily accessible with clear
+documentation on how to extend them by adding to their function libraries and
+tool-chains. Then, CPS application developers should be willing to sacrifice
+some time writing the drivers and functions they require for their applications
+when using the macroprogramming language. Achieving a complete macroprogramming
+environment through such a collaborative effort would greatly aid in the
+implementation of CPS applications and accelerate our advancement towards the
+world covered by sensors that was envisioned by the wireless sensor network
+pioneers over a decade ago. 

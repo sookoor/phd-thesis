@@ -1,0 +1,118 @@
+\chapter{Code Translation}
+\label{appendix:codeTranslation}
+
+\begin{table}
+\begin{tabular}{|l|l|l|}
+\noalign{\hrule} 
+ & & \multicolumn{1}{c|}{$\mathbf{lhs = M(a_1,\ldots,a_n) \ \% \ Synchronous\ Read }$ } \\
+\noalign{\hrule}
+\multirow{2}{*}{\begin{sideways}Cnt. or Ref.\end{sideways}} & R& %
+\tt\begin{tabular}{l} %
+owner\_id = RTS.owner(cur\_pc(), M); \\
+RTS.notify(cur\_pc(), owner\_id); \\
+\end{tabular} \\ \cline{2-3}
+ & L & %
+% Centralized, local (i.e. we have control)
+\tt\begin{tabular}{l} %
+node\_ids = source\_nodes(a1); \\
+RTS.wait(cur\_pc(), node\_ids); \\
+lhs = local( M(a1,...,an) ); \\
+\end{tabular} \\ \noalign{\hrule}
+\multirow{2}{*}{\begin{sideways}Distributed\end{sideways}} & R & %
+\tt\begin{tabular}{l} %
+if (a1 contains node\_id()) then \\
+~~owner\_id = RTS.owner(cur\_pc(), M); \\
+~~RTS.send(owner\_id, \\
+~~~~local(M(node\_id(), a2,...,an) )) \\
+~~RTS.notify(cur\_pc(), owner\_id); \\
+fi; \\
+\end{tabular} \\ \cline{2-3}
+ & L &  %
+\tt\begin{tabular}{l}%
+node\_ids = source\_nodes(a1); \\
+RTS.wait(cur\_pc(), node\_ids); \\
+lhs = local( M(a1,...,an) ); 
+\end{tabular}   \\
+\noalign{\hrule}
+\end{tabular}
+\caption[Pseudocode for mote-level microcode translation of synchronous read] {For each data representation, the row
+marked L (for \emph{local}) denotes the code for the mote that will
+perform the operation (i.e., the locus of synchronization); R (for
+\emph{remote}) marks the code for all other nodes. {\tt M} is a
+macrovector; {\tt lhs} and {\tt rhs} are normal vectors. The
+mote-local representation of {\tt x} is given by {\tt local(x)}. The
+{\tt owner(PC,M)} function gives the ID of the node requesting
+the read or write operations on macrovector {\tt M} at
+location {\tt PC} in the macroprogram.}
+\label{table:synchronousRead}
+\end{table}
+
+\begin{table}
+\begin{tabular}{|l|l|l|}
+\noalign{\hrule} 
+ & & \multicolumn{1}{c|}{$\mathbf{M(a_1,\ldots,a_n) = rhs \ \% \ Synchronous\ Write}$ } \\
+\noalign{\hrule}
+\multirow{2}{*}{\begin{sideways}Centralized\end{sideways}} & R& %
+\tt\begin{tabular}{l} %
+if (a1 contains node\_id()) then\\
+~~owner\_id = RTS.owner(cur\_pc(), M); \\
+~~RTS.wait(cur\_pc(), owner\_id); \\
+fi; \\
+\end{tabular} \\ \cline{2-3}
+ & L & %
+\tt\begin{tabular}{l} %
+node\_ids = source\_nodes(a1); \\
+local( M(a1,...,an) ) = rhs; \\
+RTS.notify(cur\_pc(), node\_ids); \\
+\end{tabular} \\ \noalign{\hrule}
+\multirow{2}{*}{\begin{sideways}Reflected\end{sideways}} & R & %
+\tt\begin{tabular}{l} %
+if (a1 contains node\_id()) then \\
+~~owner\_id = owner(cur\_pc(), M); \\
+~~RTS.receive(owner\_id, \\
+~~~~local( M(a1,...,an) )); \\
+~~RTS.wait(cur\_pc(), owner\_id); \\
+fi; \\
+\end{tabular} \\ \cline{2-3}
+ & L & %
+\tt\begin{tabular}{l} %
+node\_ids = source\_nodes(a1); \\
+local( M(a1,...,an) ) = rhs; \\
+foreach (node\_id in node\_ids) do \\
+~~RTS.send(node\_id, \\
+~~~~~~~~~~~local( M(a1,...,an) )); \\
+done; \\
+RTS.notify(cur\_pc(), node\_ids); \\
+\end{tabular} \\ \noalign{\hrule}
+\multirow{2}{*}{\begin{sideways}Distributed\end{sideways}} & R & %
+\tt\begin{tabular}{l} %
+if (a1 contains node\_id()) then \\
+~~owner\_id = RTS.owner(cur\_pc(), M); \\
+~~RTS.receive(owner\_id, \\
+~~~~local(M(node\_id(), a2,...,an))); \\
+~~RTS.wait(cur\_pc(), owner\_id); \\
+fi; \\
+\end{tabular} \\ \cline{2-3}
+ & L &  %
+\tt\begin{tabular}{l}%
+node\_ids = source\_nodes(a1); \\
+local( M(a1,...,an) ) = rhs; \\
+foreach (node\_id in node\_ids) do \\
+~~RTS.send(node\_id,\\
+~~~~~~~~~~~local( M(a1,...,an) )); \\
+done; \\
+RTS.notify(cur\_pc(), node\_ids); \\
+\end{tabular}   \\
+\noalign{\hrule}
+\end{tabular}
+\caption[Pseudocode for mote-level microcode translation of synchronous write] {For each data representation, the row
+marked L (for \emph{local}) denotes the code for the mote that will
+perform the operation (i.e., the locus of synchronization); R (for
+\emph{remote}) marks the code for all other nodes. {\tt M} is a
+macrovector; {\tt lhs} and {\tt rhs} are normal vectors. The
+mote-local representation of {\tt x} is given by {\tt local(x)}. The
+{\tt owner(PC,M)} function gives the ID of the node requesting
+the read or write operations on macrovector {\tt M} at
+location {\tt PC} in the macroprogram.}
+\label{table:synchronousWrite}
+\end{table}

@@ -1,0 +1,289 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{fancyvrb}
+\usepackage[tight]{subfigure}
+\usepackage{multirow}
+\usepackage[english]{babel}
+\usepackage[usenames]{color}% for color
+\usepackage{comment}
+\usepackage{flushend}
+\usepackage{framed}
+\usepackage{atbeginend}
+\usepackage{paralist} % for concise lists
+\usepackage{verbatim} % for comment blocks
+\usepackage{wrapfig} % for within-text-flow wrap-around figures
+\usepackage{listings}
+\usepackage{algorithmic}
+\usepackage{alltt}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{ccaption}
+
+%\usepackage[nolineno]{lgrind}
+
+% ???
+%\LGnorulestrue
+
+% If you're using lgrind for C code
+%\newif\ifusegrind
+%\usegrindfalse
+
+% For a black square at the end of proofs
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+% Theorem-like environments with title Theorem and title Lemma, having
+% chapter-relative numbering (i.e. first theorem in Ch. 5 is 5.1).
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+% For nicely formatted URLs
+\usepackage{url}
+
+% I had a conflict with \url in BiBTeX, so here's an alias. The BiBTeX
+% file has this sort of thing:
+%   note = "URL: {\urlBiBTeX{http://coppit.org/}}",
+\newcommand{\urlBiBTeX}[1]{\url{#1}}
+
+% xspace is used in macros to add a space unless the macro is followed
+% by certain punctuation characters
+%% \iftth
+%% \newcommand{\xspace}{\ }
+%% \else
+%% \usepackage{xspace}
+%% \fi
+
+% Use tex4ht if ht is true
+%% \ifht
+%% % ",2" is causing:
+%% % ! LaTeX Error: Option clash for package tex4ht.
+%%   \usepackage[html,2]{tex4ht}
+%% %  \usepackage[html]{tex4ht}
+%% \else
+%% \fi
+
+% \ifwww can be used in the document to tweak it for HTML output
+\newif\ifwww
+
+%% \iftth
+%% \wwwtrue
+%% \fi
+
+%% \ifht
+%% \wwwtrue
+%% \fi
+
+% Change [1][2][3] to [1,2,3]
+\usepackage{cite}
+
+% Generate links in html and PDF.
+%\usepackage[breaklinks=true,letterpaper=true,a4paper=false]{hyperref}
+
+% Tell LaTeX to not "bottom justify" text. This prevents ugly
+% spaces between paragraphs in columns when LaTeX stretches them.
+\raggedbottom
+
+% Help LaTeX not violate the column margins
+\tolerance=50000
+
+% Prevent widows and orphans (lines all by themselves at the top &
+% bottom of pages)
+\widowpenalty=1500
+\clubpenalty=1500
+
+% ???
+%\relpenalty10000
+%\binoppenalty10000
+
+%% \ifdraft
+%%   \pagestyle{myheadings} \markright{Draft \today: Please do not redistribute.}
+%% \else
+%%   \pagestyle{headings}
+%% \fi
+
+% pdflatex stuff
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+        \pdffalse
+\else
+        \pdftrue
+\fi
+
+% Tell graphicx to slurp in PDF or EPS figures depending on whether
+% we're processing using pdflatex or not
+%% \ifpdf
+%%         \usepackage[final,pdftex]{graphicx}
+%%         \pdfcompresslevel=9
+%% 	\DeclareGraphicsExtensions{.pdf}
+
+%%   % Graphics are in figures directory
+%% \else
+%%         \usepackage[final]{graphicx}
+%% 	\DeclareGraphicsExtensions{.eps}
+
+%%   % Graphics are in figures directory
+%% \fi
+\graphicspath{{fig}}
+
+\usepackage{rotating} % for rotated table captions (currently) - Pieter
+
+% Set margins for one- or two-sided printing
+%% \iftwoside
+%%   \evensidemargin0in
+%%   \oddsidemargin0.46875in
+%%   \textwidth5.97in
+%% \else
+%%   \evensidemargin0.46875in
+%%   \oddsidemargin0.46875in
+%%   \textwidth5.98in
+%%   %\textwidth6.05in
+%% \fi
+
+% Extra formatting stuff
+%\setlength{\textheight}{8.75in}
+%\setlength{\textwidth}{6.8in}
+%\setlength{\topmargin}{0.25in}
+%\setlength{\headheight}{0.0in}
+%\setlength{\headsep}{0.0in}
+%\setlength{\oddsidemargin}{-.19in}
+%\setlength{\parindent}{1pc}
+
+%\setlength{\footskip}{35pt}
+
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+% A code environment for putting code in figures
+\DefineVerbatimEnvironment{figurecodeverbatim}%
+  {Verbatim}%
+  {fontfamily=tt,%
+   fontsize=\small,%
+   commandchars=\\\{\},%
+   formatcom=\def\{{\symbol{123}}\def\}{\symbol{125}}\def\\{\symbol{92}},%
+   listparameters=\setlength{\topsep}{0pt}%
+                  \setlength{\partopsep}{0pt}%
+                  \setlength{\parskip}{0pt}%
+   }
+
+% A code environment for putting code in text
+\DefineVerbatimEnvironment{quotecodeverbatim}%
+  {Verbatim}%
+  {fontfamily=tt,%
+   fontsize=\small,%
+   commandchars=\\\{\},%
+   formatcom=\def\{{\symbol{123}}\def\}{\symbol{125}}\def\\{\symbol{92}}%
+   }
+
+%%\newcommand{\fancyfloatrule}{\ifwww\else{\noindent\hrulefill\par}\fi}
+\newcommand{\fancyfloatsize}{\small}
+
+%%\newcommand{\boldheading}[1]{{\vspace{0.1in}\noindent \bf #1} \hspace{0.06in}}
+
+% Puts a line above and below a figure. This is nice for text-only
+% figures.
+\newenvironment{fancyfigure}[1][tbp]%
+  {\begin{figure}[#1]%
+   \fancyfloatsize%
+   \fancyfloatrule%
+  }
+  {\fancyfloatrule%
+   \end{figure}}
+
+% Month in text format
+\newcommand*{\Month}{%
+  \ifcase\month \or
+  January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or
+  December\fi \xspace
+}
+
+% Year
+\newcommand*{\Year}{\number\year\xspace}
+
+% Needed for Ventry to work
+\usepackage{calc}
+
+% To get definitions that line up with the longest term.
+\newenvironment{Ventry}[1]%
+ {\begin{list}{}{\renewcommand{\makelabel}[1]{##1:\hfil}%
+  \settowidth{\labelwidth}{\textsf{#1:}}%
+  \setlength{\itemsep}{0pt}%
+  \setlength{\parsep}{0pt}%
+  \setlength{\leftmargin}{\labelwidth+\labelsep}}}%
+  {\end{list}}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0} 
+\definecolor{gray}{rgb}{0.5,0.5,0.5}  
+\definecolor{gray_ulisses}{gray}{0.55}
+\definecolor{castanho_ulisses}{rgb}{0.71,0.33,0.14}
+\definecolor{preto_ulisses}{rgb}{0.41,0.20,0.04}
+\definecolor{green_ulises}{rgb}{0.2,0.75,0}
+\def\PAIR#1#2{\langle#1, #2\rangle} 
+%%\newcommand\aand{\ \wedge\ } 
+%%\newcommand\oor{\ \vee\ }    
+\lstdefinelanguage{MacroLab}
+{
+  basicstyle=\ttfamily\small,
+  sensitive=true,
+  morecomment=[l][\color{red}\small]{\%},
+  morestring=[b]',
+  stringstyle=\color{dkgreen}, %% string color   
+  showstringspaces=false,   
+  numbers=left, %% number lines    
+  numberstyle=\ttfamily\small\color{gray}, %% the style of the number
+  numberblanklines=true,
+  showspaces=false,
+  showtabs=false,
+  xleftmargin=5pt,
+  xrightmargin=-20pt,
+  stepnumber=1,   
+  numbersep=5pt,   
+  backgroundcolor=\color{white},   
+  tabsize=2,
+  captionpos=b,   
+  breaklines=true,
+  breakatwhitespace=false,
+  keywordstyle=\color{blue},   
+  ndkeywordstyle=\color{red},   
+  breakautoindent=true,
+  morekeywords={if,while,RunTimeSystem,newSensorVector,newMacrovector,every,sense,end,neighborReflection,find,sum,max,getTime,
+  getNodes}
+%%   morekeywords={while,if,end,numel,find,max,RunTimeSystem,Macrovector,neighborReflection,CAMERAFOCUS,DISPLAY,createSensorVector,sense,getNodes,getTime,every,sum,createMacrovector,sread}
+}
+
+\lstnewenvironment{macrolab}
+{\lstset{language=MacroLab}}
+{}
+
+\lstdefinelanguage{nesC}
+{
+  basicstyle=\ttfamily\small,
+  sensitive=true,
+  morecomment=[l][\color{red}\small]{\/\/},
+  morestring=[b]',
+  stringstyle=\color{dkgreen}, %% string color   
+  showstringspaces=false,   
+  numbers=left, %% number lines    
+  numberstyle=\ttfamily\small\color{gray}, %% the style of the number
+  numberblanklines=true,
+  showspaces=false,
+  showtabs=false,
+  xleftmargin=5pt,
+  xrightmargin=-20pt,
+  stepnumber=1,   
+  numbersep=5pt,   
+  backgroundcolor=\color{white},   
+  tabsize=2,
+  captionpos=b,   
+  breaklines=true,
+  breakatwhitespace=false,
+  keywordstyle=\color{blue},   
+  ndkeywordstyle=\color{red},   
+  breakautoindent=true,
+  morekeywords={if,else,while,and,or,not,abstract,as,atomic,async,call,command,components,configuration,default,event,implementation,interface,includes,module,norace,post,provides,signal,task,uses,result_t,SUCCESS,FAIL,TRUE,FALSE}
+}
+
+\lstnewenvironment{nesc}
+{\lstset{language=nesC}}
+{}
+

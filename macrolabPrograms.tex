@@ -1,0 +1,67 @@
+\chapter{MacroLab Programs}
+\label{appendix:macrolabPrograms}
+
+\begin{figure}
+  \begin{macrolab}
+RTS = RunTimeSystem();
+lSensors = SensorVector('lightSensor','uint16');
+lightValues = Macrovector('uint16');
+every(1000)
+  lightValues =  sense(lSensors);
+  BASE_DISPLAY(lightValues);
+end
+  \end{macrolab}
+  \caption[A data collection application (Surge) in MacroLab]{Surge reads sensor
+  values and displays them at the base station.  {\tt BASE\_DISPLAY} is
+  implemented within the RTS and sends a message to a base station for display.}
+  \label{code:Surge}
+\end{figure}
+
+\begin{figure}  
+  \begin{macrolab}
+motes = RTS.getMotes('type', 'tmote')
+magSensors = SensorVector(motes, 'magnetometer');
+magVals = Macrovector(motes);
+neighborMag = neighborReflection(motes, magVals);
+THRESH = uint8(500);
+every(1000)
+  magVals =  magSensors.sense();
+  active = find(sum(neighborMag > THRESH, 2) > 3);
+  maxNeighbor = max(neighborMag, 2);
+  leaders = find(maxNeighbor(active) == magVal(active));
+  CAMERAFOCUS(leaders);
+end
+  \end{macrolab}
+  \caption[A tracking application (PEG) in MacroLab]{Every 1000\ms, nodes take a
+  reading from their magnetometers and share the values with their neighbors.
+  If more than three nodes in a neighborhood sense a magnetometer value about a
+  threshold, a leader is elected from among them and a camera is focused on
+  it. {\tt CAMERAFOCUS} is implemented within the RTS and sends a message to the
+  camera, which is at the base station.}
+  \label{code:PEG}
+\end{figure}
+
+\begin{figure*}[t]
+  \begin{macrolab}
+    RTS = RunTimeSystem();
+    busstops = RTS.getNodes('stopnode'); 
+    buses = RTS.getNodes('bus');
+    estimates = Macrovector(busstops, length(buses) ,'uint16');
+    arrivals = Macrovector(busstops, length(buses) ,'uint16'));
+    travelTime = Macrovector(busstops, length(busstops), length(buses) ,'uint16'));
+    busSensors = SensorVector('BusSensor',busstops,'uint16');
+    routes = uint8({[1 2 3 4], [ 5 6 7 8]}); %Example routes
+
+    while(1)
+      [busID,r] =  sense(busSensors);
+      busTime = RTS.getTime();
+      travelTime(routes{r},routes{r},busID)[1,3] = busTime - arrivals(routes{r}, busID);
+      arrivals(routes{r},busID)[1,2] = busTime;
+      estimates(routes{r},busID) = travelTime(routes{r},routes{r},busID)[2,3] + busTime;
+      BASE_DISPLAY(estimates(routes{r},:));
+    end
+  \end{macrolab}
+  \caption[A bus tracking application in MacroLab]{MacroLab code for the bus
+  tracking application.}
+  \label{code:BusTracking}
+\end{figure*}

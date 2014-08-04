@@ -1,0 +1,187 @@
+\chapter{Introduction}
+
+Cyber-Physical Systems (CPSs) combine low-power radios with tiny embedded
+processors in order to simultaneously cover large geographic areas {\em and}
+provide high-resolution sensing/actuation.  This revolutionary technology has
+begun to deliver a new generation of engineering systems and scientific
+breakthroughs.  However, CPSs are extremely difficult to program; building even
+a simple application entails several complex tasks such as distributed
+programming, resource management, and wireless networking.  CPSs have reached a
+reasonable degree of technological maturity, but their impact and widespread
+adoption is limited by the complexity of their software.
+
+Creating and debugging programs for CPSs is notoriously difficult. The most
+widely used programming paradigm for CPSs is node-level
+programming. \emph{Node-level programming} is the process in which a developer
+manually creates the program that will run on each node, specifying node-local
+actions such as sensing, message passing, and local processing.  These programs
+then execute on the nodes and the interactions between them produce emergent,
+network-wide behaviors.  This programming model is notoriously difficult to use
+because the emergent network behavior is never explicitly specified and is
+instead fragmented among the programs of multiple different nodes.  Furthermore,
+the emergent network behavior is difficult to predict: the user must have a
+mental model of each node and be able to mentally simulate the interactions
+between the nodes.  This is particularly challenging given the complex, dynamic,
+and non-deterministic nature of CPSs: execution flows non-deterministically
+between nodes via unreliable broadcast messages and starts spontaneously on
+nodes due to timer and sensor interrupts.  Despite these challenges, node-level
+programming is the most common way to program a
+WEN~\cite{Gay,bhatti2005mem,dunkels2004cla}.
+
+{\em Macroprogramming} is an emerging technology that aims to address this
+problem by providing high-level programming abstractions: the user writes a
+single {\em macroprogram} that specifies high-level distributed operations
+(i.e., leader election or contour finding), and the system automatically
+converts these into \emph{microprograms} that specify local actions for each
+node (i.e., sensing, message passing, and local processing).  Macroprograms do
+not actually execute on any node; all nodes execute microprograms, and the
+operations specified in the macroprogram are thus executed in a distributed
+fashion.  Macroprogramming provides the user with the illusion of programming a
+single machine by abstracting away the low-level details of message passing and
+distributed computation.  This promising approach has recently attracted dozens
+of prototype implementations with a wide array of programming models, including
+relational databases~\cite{Madden}, geographic regions~\cite{Welsh2004}, logical
+rules~\cite{Chu2007}, and data streams~\cite{Whitehouse}.
+
+This dissertation presents the {\em MacroLab} framework for CPS software
+development and {\em MDB}, the first system to support the debugging of
+macroprograms. MacroLab is a macroprogramming framework that provides a
+vector programming abstraction using syntax similar to Matlab, which already has
+broad adoption among scientists and engineers.  Data from sensors and actuators
+are manipulated just like other numerical vectors, making MacroLab programs
+similar to, and easy to integrate with, existing scientific software.  Its
+traditional, imperative programming model supports general-purpose programming
+and is a natural way to encode CPS applications involving both sensing and
+actuation.
+
+Since debugging is an important part of the software development process, the
+MacroLab Debugger (MDB) is implemented to aid users of MacroLab in CPS
+application development. MDB allows users to set breakpoints and step through
+macroprograms using traditional source-level debugging commands, much like
+GDB~\cite{gdb}.  This provides the same abstraction as debugging a sequential
+program on a single machine, even though the macroprogram executes in a
+distributed, asynchronous manner on the network. This process is
+\emph{macrodebugging}.  A key challenge is to allow the user to step through a
+macroprogram in a sequential order, even if the nodes are not all executing the
+same distributed operations at any given time.  MDB addresses this challenge by
+providing two ways to view distributed state: (1) \emph{logical views} depict
+the distributed state where each node is executing the same logical operation in
+the macroprogram, although possibly at different times, and (2) \emph{temporal
+views} depict distributed state of the entire system at a fixed time, even
+though nodes may not all be executing the same distributed operation.  Both of
+these interfaces support {\em time travel}, which means that the user can step
+both forward and backward through the code.
+
+In addition to the ability to view distributed state, MDB provides two functions
+that are not supported by most existing source-level debuggers.  First,
+\emph{historical search} allows the user to search for the manifestation of a
+bug over the entire historical sequence of distributed states, without manually
+stepping forward and backward through the code.  Second, MDB allows the user to
+make \emph{hypothetical changes} to a macroprogram at debugging time, and to
+observe the effect of these changes on distributed network state without the
+need to redeploy, execute, and test the new code.
+
+MDB fills an important gap in the macroprogramming tool chain, thereby making it
+easier to debug and deploy macroprograms.  Furthermore, macrodebugging is both
+easier and has lower overhead than node-level debugging: the ability to view
+global, distributed state using the high-level macroprogramming abstractions
+eliminates the need to trace through the execution details of multiple nodes,
+such as message passing and hardware interrupts.  Thus, MDB produces a marriage
+between debugging and macroprogramming that is mutually beneficial to both
+fields.
+
+MDB is evaluated on three macroprogams running on a 21 node wireless testbed,
+and find that MDB has modest memory, execution, and energy overhead:
+approximately 300\byte of memory, 0.5\% of the CPU, and 30\% energy overhead.
+This energy overhead is substantial enough that the user would probably disable
+MDB during the deployment phase, introducing the possibility of
+\emph{heisenbugs}: changes in the manifestation of bugs caused by enabling or
+disabling the debugger.  Therefore, MDB also includes a lightweight
+implementation called \emph{MDB Lite} that only has 0.9\% energy overhead.  MDB
+Lite does not provide debugging support, but it does preserve the timing and
+memory characteristics of MDB, allowing the user to reduce energy overhead while
+still eliminating the possibility of heisenbugs.
+
+While MacroLab theoretically provides an ideal framework for CPS application
+development, its effectiveness in the real world has not been evaluated. This is
+also true for many, if not most, other macroprogramming abstractions proposed
+for CPSs. Advanced CPSs still tend to use node-level programming with languages
+such as TinyOS that were developed over ten years ago for simpler wireless
+sensor networks. In order to understand the weaknesses of macroprogramming
+abstractions that have made their adoption so slow and to better understand the
+efficiency of MacroLab as a macroprogramming abstraction for CPSs, a number of
+case studies involving three versions of a smart home application are
+implemented. The application considered for this study is an occupant-oriented
+room-level heating, ventilation, and air conditioning (HVAC) zoning system
+called {\em Smart Zoning}. Occupant-oriented HVAC control was selected because
+it is a compelling CPS application that allows the exploration of all aspects of
+cyber-physical systems. It involves sensing a physical environment using a
+heterogeneous collection of wirelessly connected sensors, data storage and
+computation for prediction and control, and actuation of physical
+hardware. Also, the system operates under real-time constraints since the
+actuations have to be performed in response to dynamic changes in the
+environment. Finally, the implementation of Smart Zoning involves the
+interaction between heterogeneous commercial off-the-shelf (COTS) sensors, a
+scenario that will be prevalent in many CPSs to come.
+
+The HVAC controller evolves through three iterations from first controlling
+statically defined zones based on occupancy, to dynamically altering zones in
+response to changes in occupancy and temperature, to finally attempting to
+predict temperature responses and occupancy patterns. Throughout this evolution
+of the application, it is demonstrated that a program written in MacroLab can be
+changed relatively easily. MacroLab programs are also shown to provide varying
+levels of optimizations in terms of the actual program implementation as the
+program complexity grows. An insight gained from the case studies is that as the
+complexity of the programs grow, and/or the size of the network gets smaller,
+the optimizations afforded by a macroprogramming language, such as MacroLab, is
+limited.
+
+This dissertation makes the following three contributions to the field of
+Cyber-Physical Systems:
+
+\par{\bf MacroLab } is a vector-based macroprogramming abstraction. MacroLab
+provides an easy-to-use programming abstraction based on the widely used Matlab
+language. MacroLab generates efficient binaries by optimizing applications based
+on user specified cost models and customizing the microprograms based on the
+network topology using deployment specific code decomposition.
+
+\par {\bf MDB } is the first debugger that allows debugging at the macroprogram
+source-level. MDB makes CPS application development easier by allowing
+developers to time-travel through an application and observe how its state
+changes over time, search for bugs over a historical sequence of distributed
+states, and see the effect of hypothetical changes on distributed state. All of
+these features are possible due to MDB being a post-mortem debugger that
+operates on data traces collected during system execution.
+
+\par {\bf Occupant-oriented zoning } was implemented in three phases with the
+first phase being Dual-Zone: a statically zoned system where a house is
+separated into two zones that are activated depending on the time of day. One
+zone is active during the day, while the other is active at night. Dual-Zone
+uses 20.5\% less energy than a traditional thermostat that conditioned the whole
+house as a single zone. The second phase was RoomZoner that enabled dynamically
+changing zones based on occupancy. RoomZoner was compared to the whole house
+being conditioned as a single zone but controlled with the same set of
+temperature sensors as RoomZoner instead of a traditional thermostat with a
+single temperature sensor. In this comparison, RoomZoner used 14.4\% less energy
+than whole house conditioning. The third phase was SmartZone which is a
+predictive zoning system. While the predictive zoning controller was not
+implemented, two major components of such a system: a predictive temperature
+model and a predictive occupancy mode were implemented. The predictive occupancy
+model achieved over 75\% accuracy across four houses with only 10 days of
+training data.
+
+While these contributions advance the field of cyber-physical systems, there
+still remains a lot more work to be done to truly unleash the potential of the
+interaction of computers with the physical environment. While a world covered in
+sensors, as envisioned by the pioneers of wireless sensors networks a decade
+ago, has not yet arrived, people are surrounded by sensors in the form of smart
+phones and smart appliances that, if leveraged to build CPSs, could
+revolutionize the way they live. In order for this revolution to take place an
+easy way to program such a disparate collection of devices is
+essential. MacroLab would be ideal for such a scenario due to its extensibility
+to support new hardware platforms. Yet, its function libraries and collection of
+hardware drivers is greatly lacking for it to be useful in its present
+incarnation. Yet, releasing it as an open-source platform where developers can
+complete its function library and add to its collection of drivers can transform
+it into a tool that can propel the field of CPSs through the next decade and
+beyond.

@@ -1,0 +1,11 @@
+*.bbl
+*.bib
+*.toc
+*.out
+*.~
+*.aux
+*.blg
+*.lof
+*.log
+*.lot
+sookoor-dissertation.pdf

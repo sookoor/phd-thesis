@@ -1,0 +1,32 @@
+\chapter{RTS Interface}
+\label{appendix:e}
+
+\begin{table}
+  \centering
+   \begin{tabular}{| l |}
+     \hline
+     \multicolumn{1}{|c|}{Operation} \\
+     \hline
+     getID() \\
+     \textit{returns the node's ID}\\
+     \hline
+     getProperty('property') \\
+     \textit{returns a generic property of a node} \\
+     \hline
+     getNodes('group') \\
+     \textit{returns the current membership in a global group}\\
+     \hline
+     getTime() \\
+     \textit{returns the current global time} \\
+     \hline
+     getNeighbors() \\
+     \textit{returns the current radio neighbors of a node}\\
+     \hline
+     remoteFeval(nodeIDs,funcName,\{P1,P2,...,Pn\}) \\
+     \textit{remote function invocation}\\
+     \hline
+   \end{tabular}
+   \caption[Functions supported by the Run-Time System]{The RTS must provide an interface for
+   neighbor discovery, time sync, and remote function calls.}
+   \label{table:lib}
+\end{table}

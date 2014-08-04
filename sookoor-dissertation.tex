@@ -1,0 +1,170 @@
+\documentclass[10pt, letterpaper, openany, final, oneside]{book}
+\usepackage[print]{uva-seas-thesis}
+
+%\documentclass[10pt, letterpaper, openany]{book}
+%\usepackage[hyper, nobind, draft]{uva-seas-thesis}
+%\usepackage[hyper, nobind]{uva-seas-thesis}
+
+\newtheorem{thm}{Theorem}
+
+\newcommand{\boldheading}[1]{{\vspace{0.1in}\noindent \bf #1} \hspace{0.06in}}
+\newcommand{\boldhead}{\vspace{0.1in}\noindent \bf }
+\usepackage[english]{babel}
+\usepackage[tight]{subfigure}
+%\usepackage[usenames]{color} % for color
+\usepackage{algorithmic}
+\usepackage{alltt}
+\usepackage{amsmath}
+\usepackage{amssymb}
+%\usepackage{atbeginend}
+\usepackage{ccaption}
+\usepackage{cite}
+\usepackage{comment}
+\usepackage{fancyhdr}
+\usepackage{flushend}
+\usepackage{framed}
+\usepackage{graphicx} % for subfigures
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{multirow} 
+\usepackage{paralist} % for concise lists
+\usepackage{rotating} % for rotated table captions (currently) - Pieter
+\usepackage{url}      % for pretty URLs and better line-breaking
+\usepackage{verbatim} % for comment blocks
+\usepackage{wrapfig} % for within-text-flow wrap-around figures
+\usepackage{xspace}
+\usepackage{float}
+\usepackage{appendix} % Makes appendices
+\usepackage{chngcntr}
+\usepackage[section]{placeins}
+\usepackage{afterpage}
+
+\input{texstuff}
+
+\input{abbreviations}
+
+\floatstyle{ruled}
+\newfloat{algorithm}{!thp}{alg}
+\floatname{algorithm}{Algorithm}
+
+\newcommand\aand{\ \wedge\ } 
+\newcommand\oor{\ \vee\ }    
+
+%Aliases, acronyms, shortcuts
+% add aliases here. good for hiding your project name or allowing
+% later respelling     
+\newcommand{\XXX}[1]{{\noindent \bf \small XXX:    #1}} 
+\newcommand{\TIS}[1]{{\noindent \bf \small TIS:    #1}} 
+\newcommand{\tis}[1]{{\noindent \bf \small TIS:    #1}} 
+
+
+\newcommand{\m}{\ensuremath{\,\,m}\xspace}
+\newcommand{\km}{\ensuremath{\,\,km}\xspace}
+
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.15}
+\renewcommand{\floatpagefraction}{0.7}
+\afterpage{\clearpage}
+
+\author{Tamim I. Sookoor}
+%\title{Retrofitting Centralized HVAC Systems for Occupant-Oriented Room-Level Heating and Cooling} 
+\title{Application Development for Cyber-Physical Systems: Programming Language Concepts and Case Studies}
+\degree{Doctor of Philosophy}
+\program{Computer Science}
+\documenttype{dissertation}
+\graduationmonth{August}
+\graduationyear{2012}
+
+\begin{document}
+% make the title area
+\maketitle
+\copyrightpage
+
+\frontmatter
+
+\include{abstract}
+
+\begin{signatures}
+ \signature[Kamin Whitehouse]{Kamin Whitehouse, Adviser}
+ \signature[Jack Stankovic]{Jack Stankovic, Committee Chair}
+ \signature[Stephen D. Patek]{Stephen D. Patek}
+ \signature[Sang H. Son]{Sang H. Son}
+ \signature[Gabriel Robins]{Gabriel Robins}
+
+ \dean{James H. Aylor}
+\end{signatures}
+
+\include{dedication}
+
+\include{acknowledgements}
+
+\tableofcontents
+\listoftables
+\listoffigures
+
+\mainmatter
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\include{introduction}
+%\include{relatedWork}
+\include{macrolab}
+\include{mdb}
+\include{cs1}
+\include{cs2}
+\include{cs3}
+%\include{evaluation}
+%\include{overview}
+%\include{occupancyAssessment}
+%\include{thermalModeling}
+%\include{zoneControl}
+%\include{implementation}
+%\include{holisticEvaluation}
+\include{conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                 %
+%                            APPENDICES                           %
+%                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\appendix
+
+%\counterwithin{thm}{section}
+% \renewcommand{\thethm}{\thesection\arabic{thm}}% optional
+
+%\include{macrolabArchitecture}
+%\include{mdbCommands}
+%\include{activeRegisters}
+%\include{dayNightController}
+%\include{cs2algorithms}
+%\include{percolator}
+
+\backmatter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%  Bibliography %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\nocite{*}
+\bibliography{sookoor-dissertation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%   THE END   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% that's all folks
+\end{document}
+
+
+
+
+
+
